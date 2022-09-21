@@ -1,0 +1,16 @@
+arduino:
+    bout_rate: 9600
+    steps_per_photo: 945
+    steps_per_dia: 1530
+    zero_point: 0
+    go_back_steps: 5
+    go_back: false
+    time_out: 10
+    start_position: 1500 #position the scanner moves to at the start, so you can put in the filmholder
+    first_image_position: 3450 # position for the first image
+    first_dia_position: 3500
+images:
+    images_per_strip: 3
+    dia: true
+withUI: false
+calibrate: true
