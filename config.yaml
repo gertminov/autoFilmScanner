@@ -10,7 +10,7 @@ arduino:
     first_image_position: 3450 # position for the first image
     first_dia_position: 3500
 images:
-    images_per_strip: 3
+    images_per_strip: 4
     dia: true
 withUI: false
 calibrate: true

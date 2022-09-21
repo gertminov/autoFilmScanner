@@ -54,6 +54,9 @@ func watch(watcher *fsnotify.Watcher, path string) {
 					fmt.Println("created file:", event.Name)
 					newStrip := countImagesScanned()
 					if newStrip {
+						for len(watcher.Events) > 0 {
+							<-watcher.Events
+						}
 						continue
 					}
 					serial.SendTurn()
@@ -80,7 +83,7 @@ func watch(watcher *fsnotify.Watcher, path string) {
 
 func countImagesScanned() bool {
 	imagesScanned++
-	if imagesScanned >= imagesPerStrip {
+	if imagesScanned >= imagesPerStrip-1 {
 		serial.MoveToStartPosition()
 		message := "Alle Bilder in dem Strip (" + strconv.Itoa(imagesPerStrip) + ") gescanned, lege neue Bilder ein, warte bis das erste bild in position ist und drücke scannen in Vuescan"
 		ui.Alert(message, "finished scanning")
