@@ -1,6 +1,7 @@
-package vuescan
+package keyboard
 
 import (
+	"fyneTest/backend/config"
 	"github.com/micmonay/keybd_event"
 	"log"
 )
@@ -8,9 +9,9 @@ import (
 var kb keybd_event.KeyBonding
 var dia bool
 
-func InitKeyboard(isDia bool) {
+func InitKeyboard(isDia *config.Images) {
 	var err error
-	dia = isDia
+	dia = isDia.Dia
 
 	kb, err = keybd_event.NewKeyBonding()
 	if err != nil {

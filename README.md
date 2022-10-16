@@ -8,3 +8,6 @@ The system has two parts.
 
 after the new film frame is moved into the scanner, this software sends a keyboard shortcut to the scanning software
 to initialize the next scan
+
+## UI
+![](resources/ui_screenshot.png)

@@ -1,29 +1,33 @@
 package main
 
 import (
-	"fmt"
-	config2 "scanwatcher/main/config"
-	"scanwatcher/main/serial"
-	"scanwatcher/main/ui"
-	"scanwatcher/main/vuescan"
+	"fyne.io/fyne/v2"
+	"fyneTest/backend/config"
+	"fyneTest/backend/keyboard"
+	"fyneTest/backend/serial"
+	"fyneTest/backend/watcher"
+	"fyneTest/ui"
 )
 
 func main() {
-	config := config2.InitConfig()
-	path, portName := ui.AskForPathAndPort(config.WithUI)
-	fmt.Println(path)
-	watcher := initFileWatcher(config, path)
-	serial.InitSerial(portName, config)
-	vuescan.InitKeyboard(config.Images.Dia)
-	if config.Calibrate {
-		serial.CalibrateSlate()
-	}
-	serial.MoveToStartPosition()
-	ui.Alert("Please insert the film holder. AFTER that click ok to move to first image", "first image")
-	ui.Alert("please click once into the Vuescan window", "focus vuescan")
-	serial.MoveToFirstFrame()
-	vuescan.Scan()
 
-	fmt.Println("everything set up, you can start scanning now")
-	watch(watcher, path)
+	appConfig := config.InitConfig()
+	ports := serial.GetAvailablePorts()
+	var window fyne.Window
+	if len(ports) < 1 {
+		window = ui.GetNoPortsError()
+	} else {
+
+		serial.InitSerial(ports[0], &appConfig)
+		slateReady := make(chan bool, 1)
+		fileWatcher := watcher.InitFileWatcher(&appConfig)
+
+		window = ui.GetUI(&appConfig, ports, fileWatcher, slateReady)
+
+		go keyboard.InitKeyboard(&appConfig.Images)
+
+		go serial.InitSlate(appConfig.Calibrate, slateReady)
+	}
+	//go watcher.Watch(fileWatcher, &appConfig)
+	window.ShowAndRun()
 }
