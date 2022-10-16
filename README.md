@@ -1,5 +1,6 @@
 # Auto Film Scanner
 This project is a mod to the Plustec Opticfilm film scanner series, to automate the inserting of the film holder
+![](resources/ui_screenshot.png)
 
 ## How Does It Work
 The system has two parts. 
