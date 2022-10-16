@@ -1,28 +1,42 @@
-package main
+package watcher
 
 import (
 	"fmt"
+	"fyne.io/fyne/v2/widget"
+	"fyneTest/backend/config"
+	"fyneTest/backend/keyboard"
+	"fyneTest/backend/serial"
 	"github.com/fsnotify/fsnotify"
 	"log"
 	"os"
 	"path/filepath"
-	"scanwatcher/main/config"
-	"scanwatcher/main/serial"
-	"scanwatcher/main/ui"
-	"scanwatcher/main/vuescan"
 	"strconv"
+	//"strconv"
 )
 
 var imagesScanned int
 var imagesPerStrip int
 var oldFiles []string
+var appConfig *config.Config
 
-func initFileWatcher(config config.Config, path string) *fsnotify.Watcher {
+//var FinishedDialog func(title string, content string, finished chan bool)
+
+type FileWatcher struct {
+	Watcher        *fsnotify.Watcher
+	SetCurFrame    func(frame int)
+	FinishedDialog func(title string, content string)
+	StartBtn       *widget.Button
+}
+
+var fileWatcher FileWatcher
+
+func InitFileWatcher(config *config.Config) *FileWatcher {
+	appConfig = config
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
 	}
-	dir, err := os.ReadDir(path)
+	dir, err := os.ReadDir(config.DefaultPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,11 +46,14 @@ func initFileWatcher(config config.Config, path string) *fsnotify.Watcher {
 	}
 	imagesScanned = 0
 	imagesPerStrip = config.Images.ImagesPerStrip
-	return watcher
+	fileWatcher = FileWatcher{
+		Watcher: watcher,
+	}
+	return &fileWatcher
 }
 
 // test comment
-func watch(watcher *fsnotify.Watcher, path string) {
+func Watch(watcher *fsnotify.Watcher, appConfig *config.Config) {
 	defer watcher.Close()
 	done := make(chan bool)
 	go func() {
@@ -61,7 +78,7 @@ func watch(watcher *fsnotify.Watcher, path string) {
 					}
 					serial.SendTurn()
 					serial.WaitForMotor()
-					vuescan.Scan()
+					keyboard.Scan()
 				}
 			case err, ok := <-watcher.Errors:
 
@@ -73,7 +90,7 @@ func watch(watcher *fsnotify.Watcher, path string) {
 		}
 	}()
 
-	err := watcher.Add(path)
+	err := watcher.Add(appConfig.DefaultPath)
 	if err != nil {
 
 		log.Fatal(err)
@@ -83,11 +100,20 @@ func watch(watcher *fsnotify.Watcher, path string) {
 
 func countImagesScanned() bool {
 	imagesScanned++
-	if imagesScanned >= imagesPerStrip-1 {
+	//fileWatcher.SetCurFrame(imagesScanned)
+	if imagesScanned >= appConfig.ImagesPerStrip {
 		serial.MoveToStartPosition()
-		message := "Alle Bilder in dem Strip (" + strconv.Itoa(imagesPerStrip) + ") gescanned, lege neue Bilder ein, warte bis das erste bild in position ist und drücke scannen in Vuescan"
-		ui.Alert(message, "finished scanning")
+		//message := "Alle Bilder in dem Strip (" + strconv.Itoa(imagesPerStrip) + ") gescanned, lege neue Bilder ein, warte bis das erste bild in position ist und drücke scannen in Vuescan"
+		//ui.Alert(message, "finished scanning")
+		finished := make(chan bool)
+		fileWatcher.FinishedDialog("finished", "Alle Bilder in dem Strip ("+strconv.Itoa(imagesPerStrip)+") gescanned, lege neue Bilder ein und klick auf continue. Warte bis das erste bild in position ist und drücke scannen in Vuescan")
+		fileWatcher.StartBtn.SetText("Continue")
+		fileWatcher.StartBtn.OnTapped = func() {
+			finished <- true
+		}
+		<-finished
 		serial.MoveToFirstFrame()
+		fileWatcher.StartBtn.SetText("Running")
 		imagesScanned = 0
 		return true
 	}

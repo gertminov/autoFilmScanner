@@ -9,10 +9,11 @@ import (
 )
 
 type Config struct {
-	Arduino   `yaml:"arduino"`
-	Images    `yaml:"images"`
-	WithUI    bool `yaml:"withUI"`
-	Calibrate bool `yaml:"calibrate"`
+	Arduino     `yaml:"arduino"`
+	Images      `yaml:"images"`
+	WithUI      bool   `yaml:"withUI"`
+	Calibrate   bool   `yaml:"calibrate"`
+	DefaultPath string `yaml:"defaultPath"`
 }
 
 type Arduino struct {
@@ -34,8 +35,8 @@ type Images struct {
 }
 
 var defaultConfig = Config{
-	Arduino:   Arduino{1, 2, 3, 4, 5, false, 10, 1500, 3500, 3450},
-	Images:    Images{1, false},
+	Arduino:   Arduino{9600, 945, 1530, 4, 5, false, 10, 1500, 3500, 3450},
+	Images:    Images{6, false},
 	WithUI:    false,
 	Calibrate: true,
 }
@@ -50,7 +51,7 @@ func InitConfig() Config {
 	if exists {
 		config = loadConfig()
 	} else {
-		writeConfig(config)
+		WriteConfig(&config)
 		fmt.Println("Konfigurationsdatei wure erstellt")
 	}
 	return config
@@ -83,14 +84,15 @@ func checkForConfigFile() (bool, error) {
 	return false, err
 }
 
-func writeConfig(config Config) {
+func WriteConfig(config *Config) {
 	marshal, err := yaml.Marshal(&config)
+	fmt.Println(config.ImagesPerStrip)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	fileName := "config.yaml"
-	err = os.WriteFile(fileName, marshal, 777)
+	err = os.WriteFile(fileName, marshal, 0777)
 	if err != nil {
 		log.Fatal(err)
 	}

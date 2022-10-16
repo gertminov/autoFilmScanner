@@ -2,15 +2,16 @@ arduino:
     bout_rate: 9600
     steps_per_photo: 945
     steps_per_dia: 1530
-    zero_point: 0
+    zero_point: 4
     go_back_steps: 5
     go_back: false
     time_out: 10
-    start_position: 1500 #position the scanner moves to at the start, so you can put in the filmholder
-    first_image_position: 3450 # position for the first image
+    start_position: 1500
     first_dia_position: 3500
+    first_image_position: 3450
 images:
-    images_per_strip: 4
-    dia: true
+    images_per_strip: 5
+    dia: false
 withUI: false
 calibrate: true
+defaultPath: D:\Libaries\Bilder\scans\Opticfilm 7600i\2022-10-10 Luca

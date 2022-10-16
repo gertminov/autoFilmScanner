@@ -2,9 +2,9 @@ package serial
 
 import (
 	"fmt"
+	"fyneTest/backend/config"
 	"go.bug.st/serial"
 	"log"
-	"scanwatcher/main/config"
 	"strconv"
 	"strings"
 	"time"
@@ -18,7 +18,7 @@ var timeout time.Duration
 var startPosition uint32
 var firstFrame uint32
 
-func InitSerial(portString string, config config.Config) {
+func InitSerial(portString string, config *config.Config) {
 	initPort(portString, config)
 
 	setSteps(config)
@@ -31,7 +31,12 @@ func InitSerial(portString string, config config.Config) {
 	time.Sleep(2 * time.Second)
 }
 
-func setStartPosition(config config.Config) {
+func SwitchFrameType(appConfig *config.Config) {
+	setStartPosition(appConfig)
+	setSteps(appConfig)
+}
+
+func setStartPosition(config *config.Config) {
 	startPosition = config.Arduino.StartPosition
 
 	if config.Dia {
@@ -41,12 +46,12 @@ func setStartPosition(config config.Config) {
 	}
 }
 
-func initReverseSteps(config config.Config) {
+func initReverseSteps(config *config.Config) {
 	reverse = config.Arduino.GoBack
 	reverseSteps = config.Arduino.GoBackSteps
 }
 
-func initPort(portString string, config config.Config) {
+func initPort(portString string, config *config.Config) {
 	mode := &serial.Mode{
 		BaudRate: config.Arduino.BoutRate,
 	}
@@ -57,7 +62,7 @@ func initPort(portString string, config config.Config) {
 	}
 }
 
-func setSteps(config config.Config) {
+func setSteps(config *config.Config) {
 	if config.Images.Dia {
 		steps = config.Arduino.StepsPerDia
 	} else {
@@ -71,7 +76,7 @@ func GetAvailablePorts() []string {
 		log.Fatal(err)
 	}
 	if len(ports) == 0 {
-		log.Fatal("No Serieal ports")
+		log.Println("No Serieal ports")
 	}
 	return ports
 }
@@ -94,6 +99,16 @@ func MoveToStartPosition() {
 func MoveToFirstFrame() {
 	first := "to" + strconv.FormatUint(uint64(firstFrame), 10)
 	readAndWriteToSerial(first)
+	WaitForMotor()
+}
+
+func MoveToFrame(frame int) {
+
+	frameNr := uint32(frame - 1)
+	fmt.Println(frameNr)
+	pos := firstFrame + (steps * frameNr)
+	message := "to" + strconv.FormatUint(uint64(pos), 10)
+	readAndWriteToSerial(message)
 	WaitForMotor()
 }
 
@@ -145,6 +160,14 @@ func readSerial() string {
 		}
 	}
 	return message
+}
+
+func InitSlate(cal bool, ready chan bool) {
+	if cal {
+		CalibrateSlate()
+	}
+	MoveToStartPosition()
+	ready <- true
 }
 
 func CalibrateSlate() {
