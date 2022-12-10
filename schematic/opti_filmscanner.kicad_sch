@@ -945,7 +945,7 @@
     (uuid f82cee4a-5bec-4ad1-91b3-668d1f896804)
   )
 
-  (text "Push BTN not necessary" (at 120.65 88.9 0)
+  (text "EndStop" (at 123.19 88.9 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 0d6e5241-e43a-4ff8-87d9-8acf831cbe7a)
   )
