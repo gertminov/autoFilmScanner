@@ -42,6 +42,7 @@ For the **A4988** the MS1-3 Pins are used to set the amout of microsteps per ful
 | Low  | High | Low  | 1/4 step    |
 | High | High | Low  | 1/8 step     |
 | High | High | High | 1/16 step |
+
 Using more than a full step requiers to increase the stepcount in the programm accordingly and the delay between steps lowerd.
 Microstepping is not necessary, since the precision using fulls steps is enough here.
 
@@ -51,7 +52,8 @@ For the **TMC2209** the MS3 pin is called *spread* and should be connected to GN
 | Low  | Low  | 1/8 step     |
 | High | High | 1/16 step |
 | High | Low  | 1/32 step      |
-| Low  | High | 1/64 step      | 
+| Low  | High | 1/64 step      |
+
 Since the lowest is 1/8 steps, (so 8 microsteps to make 1 full step) all stepcounts in the programm have to be multiplied by 8 and the delay between steps could be lowerd or the gantry will move 8 times slower.
 
 
