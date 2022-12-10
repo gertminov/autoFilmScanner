@@ -24,7 +24,7 @@ func GetUI(appConfig *config.Config, serialPorts []string, fileWatcher *watcher.
 		config.WriteConfig(appConfig) //write config to disk when app is closed
 	})
 	a.Settings().SetTheme(customTheme.MyTheme{})
-	window = a.NewWindow("ScanWatcher65")
+	window = a.NewWindow("ScanWatcher")
 	window.Resize(fyne.Size{
 		Width:  300,
 		Height: 300,
@@ -36,7 +36,7 @@ func GetUI(appConfig *config.Config, serialPorts []string, fileWatcher *watcher.
 	if len(serialPorts) > 1 {
 		dialog.ShowInformation("Multiple Ports", "multiple serial ports connected is not tested but should work.\n please select the correct port", window)
 	}
-	hbox := container.NewVBox(
+	mainWindow := container.NewVBox(
 		components.GetModeAndPath(appConfig, fileWatcher.Watcher),
 		widget.NewSeparator(),
 		components.GetImagesSection(appConfig, fileWatcher),
@@ -44,7 +44,7 @@ func GetUI(appConfig *config.Config, serialPorts []string, fileWatcher *watcher.
 		components.GetButtons(appConfig, serialPorts, fileWatcher, &window, slateReady),
 	)
 
-	window.SetContent(hbox)
+	window.SetContent(mainWindow)
 	return window
 }
 

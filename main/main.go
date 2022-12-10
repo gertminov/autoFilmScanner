@@ -13,6 +13,7 @@ func main() {
 
 	appConfig := config.InitConfig()
 	ports := serial.GetAvailablePorts()
+	var fileWatcher *watcher.FileWatcher
 	var window fyne.Window
 	if len(ports) < 1 {
 		window = ui.GetNoPortsError()
@@ -20,7 +21,7 @@ func main() {
 
 		serial.InitSerial(ports[0], &appConfig)
 		slateReady := make(chan bool, 1)
-		fileWatcher := watcher.InitFileWatcher(&appConfig)
+		fileWatcher = watcher.InitFileWatcher(&appConfig)
 
 		window = ui.GetUI(&appConfig, ports, fileWatcher, slateReady)
 
@@ -28,6 +29,6 @@ func main() {
 
 		go serial.InitSlate(appConfig.Calibrate, slateReady)
 	}
-	//go watcher.Watch(fileWatcher, &appConfig)
+	go watcher.Watch(fileWatcher.Watcher, &appConfig)
 	window.ShowAndRun()
 }

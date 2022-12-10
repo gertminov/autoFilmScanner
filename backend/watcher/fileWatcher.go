@@ -36,7 +36,15 @@ func InitFileWatcher(config *config.Config) *FileWatcher {
 	if err != nil {
 		log.Fatal(err)
 	}
-	dir, err := os.ReadDir(config.DefaultPath)
+	//TODO
+	var watchPath = config.DefaultPath
+	if config.DefaultPath == "" {
+		watchPath, err = os.UserHomeDir()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	dir, err := os.ReadDir(watchPath)
 	if err != nil {
 		log.Fatal(err)
 	}
