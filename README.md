@@ -15,12 +15,12 @@ to initialize the next scan
 Note: The design for the mechanics would probably work better, if it was redesigned using two liniear rods on the sides and a belt/pully solution to move the gantry.
 
 Parts List:
-1x 300mm linear rod (8mm radius)
-1x LM8UU linear bearing
-1x 270mm leadscrew + nut
-1x KFL08 bearing
-1x Endstop switch
-A few M3,M5 and two M2 screws and nuts.
++ 1x 300mm linear rod (8mm radius)
++ 1x LM8UU linear bearing
++ 1x 270mm leadscrew + nut
++ 1x KFL08 bearing
++ 1x Endstop switch
++ A few M3,M5 and two M2 screws and nuts.
 
 The 3D printed parts from the modell are requiered, as well as a wooden board or something similar to mount the mechanism to.
 
