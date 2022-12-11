@@ -12,7 +12,10 @@ after the new film frame is moved into the scanner, this software sends a keyboa
 to initialize the next scan
 
 ## Mechanics
-Note: The design for the mechanics would probably work better, if it was redesigned using two liniear rods on the sides and a belt/pully solution to move the gantry.
+Note: The design for the mechanics would probably work better, if it was redesigned using two liniear rods on the sides and maybe a belt/pully solution to move the gantry.
+![](resources/mechanics.png)
+
+
 
 Parts List:
 + 1x 300mm linear rod (8mm radius)
